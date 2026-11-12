@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FoodHub — Delicious Food Delivered Fast</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand" onclick="resetToHome()">
+        <span class="brand-icon">🍔</span>
+        <span class="brand-name">Food<span class="brand-highlight">Hub</span></span>
+      </div>
+
+      <div class="nav-search-bar">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search restaurants, cuisines, or dishes..." />
+        <button id="clearSearchBtn" class="clear-btn" style="display:none;" onclick="clearSearch()">&times;</button>
+      </div>
+
+      <div class="nav-actions">
+        <button class="nav-btn health-badge" id="systemHealthBadge" title="Backend Health Status" onclick="showHealthModal()">
+          <span class="status-dot online"></span>
+          <span class="badge-text">Spring Boot Live</span>
+        </button>
+
+        <button class="nav-btn secondary-btn" onclick="openOrdersModal()">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+          <span>Orders</span>
+        </button>
+
+        <button class="cart-btn" onclick="toggleCartDrawer()">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span class="cart-label">Cart</span>
+          <span class="cart-count-badge" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <span class="hero-pill">⚡ Ultra Fast 20-Minute Delivery</span>
+      <h1 class="hero-title">Delicious food, delivered to your door step</h1>
+      <p class="hero-subtitle">Order from top-rated local kitchens, artisanal bakeries, and gourmet restaurants with zero hassle.</p>
+      
+      <!-- Cuisine Filter Pills -->
+      <div class="cuisine-pills" id="cuisineFilterContainer">
+        <button class="pill-btn active" data-cuisine="All" onclick="filterByCuisine('All')">🍽️ All</button>
+        <button class="pill-btn" data-cuisine="Italian" onclick="filterByCuisine('Italian')">🍕 Italian & Pizza</button>
+        <button class="pill-btn" data-cuisine="Burgers" onclick="filterByCuisine('Burgers')">🍔 Burgers</button>
+        <button class="pill-btn" data-cuisine="Japanese" onclick="filterByCuisine('Japanese')">🍣 Sushi & Ramen</button>
+        <button class="pill-btn" data-cuisine="Mexican" onclick="filterByCuisine('Mexican')">🌮 Mexican</button>
+        <button class="pill-btn" data-cuisine="Healthy" onclick="filterByCuisine('Healthy')">🥗 Healthy Bowls</button>
+        <button class="pill-btn" data-cuisine="Desserts" onclick="filterByCuisine('Desserts')">🍰 Desserts</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title" id="restaurantsHeading">Popular Restaurants</h2>
+        <p class="section-subtitle" id="restaurantsSubheading">Handpicked top eateries around you</p>
+      </div>
+      <div class="results-stats" id="resultsCount">Loading restaurants...</div>
+    </div>
+
+    <!-- Restaurants Grid -->
+    <div class="restaurants-grid" id="restaurantsGrid">
+      <!-- Injected by JavaScript -->
+    </div>
+  </main>
+
+  <!-- Restaurant Menu Modal -->
+  <div class="modal-backdrop" id="menuModal" onclick="closeOnBackdrop(event, 'menuModal')">
+    <div class="modal-card menu-modal-card">
+      <div class="modal-header-hero" id="modalHero">
+        <button class="modal-close-btn" onclick="closeModal('menuModal')">&times;</button>
+        <div class="modal-hero-info" id="modalHeroInfo">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+      <div class="menu-items-section">
+        <h3 class="menu-title">Featured Menu</h3>
+        <div class="menu-grid" id="menuItemsGrid">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart Drawer -->
+  <div class="cart-drawer-backdrop" id="cartBackdrop" onclick="closeCartDrawer()"></div>
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-header">
+      <div class="cart-title-row">
+        <h3>Your Order Cart</h3>
+        <span class="cart-badge-items" id="cartHeaderCount">0 items</span>
+      </div>
+      <button class="close-drawer-btn" onclick="closeCartDrawer()">&times;</button>
+    </div>
+
+    <div class="cart-items-list" id="cartItemsList">
+      <!-- Cart items injected here -->
+      <div class="empty-cart-state">
+        <span class="empty-icon">🛒</span>
+        <h4>Your cart is empty</h4>
+        <p>Explore our restaurants and add some tasty dishes to get started!</p>
+      </div>
+    </div>
+
+    <div class="cart-drawer-footer" id="cartFooter">
+      <div class="summary-line">
+        <span>Subtotal</span>
+        <span id="cartSubtotal">$0.00</span>
+      </div>
+      <div class="summary-line">
+        <span>Delivery Fee</span>
+        <span id="cartDeliveryFee">$2.99</span>
+      </div>
+      <div class="summary-line">
+        <span>Estimated Taxes (5%)</span>
+        <span id="cartTax">$0.00</span>
+      </div>
+      <div class="summary-line total-line">
+        <span>Total Amount</span>
+        <span id="cartTotal" class="total-price">$0.00</span>
+      </div>
+      <button class="checkout-btn" id="proceedCheckoutBtn" onclick="openCheckoutModal()" disabled>
+        Proceed to Checkout
+      </button>
+    </div>
+  </aside>
+
+  <!-- Checkout Modal -->
+  <div class="modal-backdrop" id="checkoutModal" onclick="closeOnBackdrop(event, 'checkoutModal')">
+    <div class="modal-card form-modal-card">
+      <div class="modal-card-header">
+        <h3>Complete Your Order</h3>
+        <button class="modal-close-btn" onclick="closeModal('checkoutModal')">&times;</button>
+      </div>
+      <form id="checkoutForm" onsubmit="handlePlaceOrder(event)">
+        <div class="form-group">
+          <label for="custName">Full Name *</label>
+          <input type="text" id="custName" required placeholder="e.g. John Doe" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="custEmail">Email Address *</label>
+            <input type="email" id="custEmail" required placeholder="john@example.com" />
+          </div>
+          <div class="form-group">
+            <label for="custPhone">Phone Number</label>
+            <input type="tel" id="custPhone" placeholder="+1 (555) 019-2834" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="custAddress">Delivery Address *</label>
+          <textarea id="custAddress" required rows="3" placeholder="Apartment, Street address, Suite, City, Zip"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Payment Method</label>
+          <div class="payment-options">
+            <label class="payment-radio">
+              <input type="radio" name="paymentMethod" value="CARD" checked />
+              <span>💳 Credit / Debit Card</span>
+            </label>
+            <label class="payment-radio">
+              <input type="radio" name="paymentMethod" value="UPI" />
+              <span>⚡ UPI / Digital Pay</span>
+            </label>
+            <label class="payment-radio">
+              <input type="radio" name="paymentMethod" value="CASH" />
+              <span>💵 Cash on Delivery</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="checkout-order-summary">
+          <div class="summary-mini-header">Order Summary:</div>
+          <div id="checkoutSummaryItems"></div>
+          <div class="summary-mini-total">
+            <span>Amount to Pay:</span>
+            <strong id="checkoutFinalTotal">$0.00</strong>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="closeModal('checkoutModal')">Cancel</button>
+          <button type="submit" class="btn-submit" id="placeOrderSubmitBtn">Place Order Now</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Order Success Confirmation Modal -->
+  <div class="modal-backdrop" id="orderSuccessModal" onclick="closeOnBackdrop(event, 'orderSuccessModal')">
+    <div class="modal-card success-modal-card">
+      <div class="success-icon-wrap">🎉</div>
+      <h2>Order Placed Successfully!</h2>
+      <p class="order-id-label">Order #<span id="confirmedOrderId">0000</span></p>
+      <p class="success-subtext">The kitchen has accepted your order and is currently preparing your meal.</p>
+      
+      <!-- Order Live Timeline -->
+      <div class="order-tracker">
+        <div class="tracker-step active">
+          <div class="step-dot"></div>
+          <span>Confirmed</span>
+        </div>
+        <div class="tracker-line active"></div>
+        <div class="tracker-step active">
+          <div class="step-dot"></div>
+          <span>Preparing</span>
+        </div>
+        <div class="tracker-line"></div>
+        <div class="tracker-step">
+          <div class="step-dot"></div>
+          <span>On the Way</span>
+        </div>
+        <div class="tracker-line"></div>
+        <div class="tracker-step">
+          <div class="step-dot"></div>
+          <span>Delivered</span>
+        </div>
+      </div>
+
+      <div class="success-details" id="confirmedOrderDetails"></div>
+
+      <div class="form-actions">
+        <button class="btn-submit" onclick="closeModal('orderSuccessModal'); openOrdersModal();">
+          View All Orders
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Orders History Modal -->
+  <div class="modal-backdrop" id="ordersModal" onclick="closeOnBackdrop(event, 'ordersModal')">
+    <div class="modal-card orders-modal-card">
+      <div class="modal-card-header">
+        <h3>Order History</h3>
+        <button class="modal-close-btn" onclick="closeModal('ordersModal')">&times;</button>
+      </div>
+      <div class="orders-list" id="ordersHistoryList">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- System Health Modal -->
+  <div class="modal-backdrop" id="healthModal" onclick="closeOnBackdrop(event, 'healthModal')">
+    <div class="modal-card form-modal-card">
+      <div class="modal-card-header">
+        <h3>Backend Health & Environment</h3>
+        <button class="modal-close-btn" onclick="closeModal('healthModal')">&times;</button>
+      </div>
+      <div class="health-info-content" id="healthInfoContent">
+        <p>Loading status from Spring Boot backend...</p>
+      </div>
+      <div class="quick-links">
+        <a href="/h2-console" target="_blank" class="quick-link-btn">Open H2 DB Console ↗</a>
+        <a href="/api/health" target="_blank" class="quick-link-btn">Inspect /api/health JSON ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <footer class="app-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <span class="brand-icon">🍔</span> Food<span class="brand-highlight">Hub</span>
+        <p>Full-Stack Spring Boot + REST API Food Platform</p>
+      </div>
+      <div class="footer-links">
+        <a href="/api/restaurants" target="_blank">Restaurants API</a>
+        <a href="/api/menu-items" target="_blank">Menu Items API</a>
+        <a href="/api/orders" target="_blank">Orders API</a>
+        <a href="/h2-console" target="_blank">Database Console</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
