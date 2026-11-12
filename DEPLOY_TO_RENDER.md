@@ -34,13 +34,12 @@ git push -u origin main
 3. Select **Build and deploy from a Git repository** > Click **Next**.
 4. Connect and choose your `foodhub` repository.
 5. Configure the settings:
-   - **Name**: `foodhub` (or `foodhub-demo`)
-   - **Language**: `Java`
+   - **Name**: `foodhub`
+   - **Language / Runtime**: Choose **Docker** or **Java** (if creating as Web Service, ensure Java is selected, not Node.js)
    - **Branch**: `main`
-   - **Region**: Any (e.g., Singapore / Oregon / Frankfurt)
    - **Build Command**:
      ```bash
-     mvn clean package -DskipTests
+     chmod +x ./mvnw && ./mvnw -f foodhub/pom.xml clean package -DskipTests
      ```
    - **Start Command**:
      ```bash
@@ -65,3 +64,4 @@ https://foodhub-xxxx.onrender.com
 > - **Source Code**: `https://github.com/<your-username>/foodhub`
 > - **Tech Stack**: Java 21, Spring Boot 4, Spring Security, Spring Data JPA, H2 In-Memory DB, Vanilla JavaScript, CSS3
 > - **Features**: Responsive storefront, restaurant directory, dynamic menu browsing, cart & checkout pipeline, currency converter (USD/INR), and role-based authentication.
+
