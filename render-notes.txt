@@ -1,0 +1,6 @@
+# Render.com deployment configuration for FoodHub Spring Boot app
+# This file tells Render how to build and start the app.
+
+# Build command: mvn -f foodhub/pom.xml clean package -DskipTests
+# Start command: java -jar foodhub/target/foodhub-0.0.1-SNAPSHOT.jar --server.port=$PORT
+

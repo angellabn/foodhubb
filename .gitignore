@@ -1,0 +1,12 @@
+target/
+*.log
+*.class
+*.jar
+!foodhub/target/foodhub-0.0.1-SNAPSHOT.jar
+.idea/
+*.iml
+.DS_Store
+node_modules/
+package-lock.json
+package.json
+
